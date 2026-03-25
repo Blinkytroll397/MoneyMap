@@ -662,7 +662,6 @@ function App() {
                 <div className="header-content">
                     <div className="logo-container" onClick={() => setCurrentPage('home')}>
                     <img src="/logo.png" className="logo" />
-                        <span className="logo-text">MoneyMap</span>
                     </div>
                     <div className="header-actions">
                         <button className="theme-toggle" onClick={toggleTheme}>
