@@ -778,18 +778,11 @@
         const { useState, useEffect, useRef } = React;
 
         // Logo Component - SVG minimalist map + money icon
-        const Logo = () => (
-            <svg className="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {/* Map pin shape */}
-                <path d="M50 10C36.7452 10 26 20.7452 26 34C26 50 50 70 50 70C50 70 74 50 74 34C74 20.7452 63.2548 10 50 10Z"
-                      stroke="currentColor" strokeWidth="4" fill="none"/>
-                {/* Dollar sign */}
-                <text x="50" y="42" fontSize="28" fontWeight="bold" textAnchor="middle" fill="currentColor">$</text>
-                {/* Base circle */}
-                <circle cx="50" cy="34" r="12" stroke="currentColor" strokeWidth="3" fill="none"/>
-            </svg>
-        );
-
+       const Logo = () => {
+  return (
+    <img src="/logo.png" className="logo" />
+  );
+};
         // Data
         const opportunities = [
             {
