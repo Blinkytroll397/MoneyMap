@@ -1,0 +1,1343 @@
+const { useState, useEffect, useRef } = React;
+
+// Logo Component - SVG minimalist map + money icon
+const Logo = () => (
+    <svg className="logo" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        {/* Map pin shape */}
+        <path d="M50 10C36.7452 10 26 20.7452 26 34C26 50 50 70 50 70C50 70 74 50 74 34C74 20.7452 63.2548 10 50 10Z"
+              stroke="currentColor" strokeWidth="4" fill="none"/>
+        {/* Dollar sign */}
+        <text x="50" y="42" fontSize="28" fontWeight="bold" textAnchor="middle" fill="currentColor">$</text>
+        {/* Base circle */}
+        <circle cx="50" cy="34" r="12" stroke="currentColor" strokeWidth="3" fill="none"/>
+    </svg>
+);
+
+// Data
+const opportunities = [
+    {
+        id: 1,
+        title: "Reselling",
+        description: "Buy products at low prices and sell them for profit on platforms like eBay, Depop, or local marketplaces.",
+        difficulty: "easy",
+        timeRequired: "1-2 weeks",
+        moneySpeed: "fast",
+        riskLevel: "low",
+        worthIt: "8/10",
+        firstEarnings: "1-2 weeks",
+        pros: [
+            "Low barrier to entry",
+            "Quick returns possible",
+            "Learn market demand",
+            "Flexible schedule"
+        ],
+        cons: [
+            "Requires initial capital",
+            "Time-consuming to find deals",
+            "Competition can be high",
+            "Storage space needed"
+        ],
+        categories: ["No money needed", "Fast money", "Beginner friendly"]
+    },
+    {
+        id: 2,
+        title: "Freelancing",
+        description: "Offer services like writing, design, programming, or marketing to clients worldwide through platforms.",
+        difficulty: "medium",
+        timeRequired: "2-4 weeks",
+        moneySpeed: "medium",
+        riskLevel: "low",
+        worthIt: "9/10",
+        firstEarnings: "2-4 weeks",
+        pros: [
+            "Work from anywhere",
+            "Set your own rates",
+            "Build valuable skills",
+            "Unlimited income potential"
+        ],
+        cons: [
+            "Income can be unstable",
+            "Finding first clients is hard",
+            "Need marketable skills",
+            "Self-discipline required"
+        ],
+        categories: ["Online only", "Beginner friendly"]
+    },
+    {
+        id: 3,
+        title: "Content Creation",
+        description: "Create videos, blogs, podcasts, or social media content and monetize through ads, sponsorships, or donations.",
+        difficulty: "medium",
+        timeRequired: "3-6 months",
+        moneySpeed: "slow",
+        riskLevel: "low",
+        worthIt: "7/10",
+        firstEarnings: "3-6 months",
+        pros: [
+            "Creative freedom",
+            "Passive income potential",
+            "Build personal brand",
+            "Multiple revenue streams"
+        ],
+        cons: [
+            "Takes time to grow audience",
+            "Requires consistency",
+            "Competitive field",
+            "Algorithm changes affect reach"
+        ],
+        categories: ["No money needed", "Online only"]
+    },
+    {
+        id: 4,
+        title: "Trading",
+        description: "Buy and sell stocks, cryptocurrencies, or forex to profit from price movements.",
+        difficulty: "hard",
+        timeRequired: "6-12 months",
+        moneySpeed: "fast",
+        riskLevel: "high",
+        worthIt: "6/10",
+        firstEarnings: "1-3 months (risky)",
+        pros: [
+            "High profit potential",
+            "Flexible hours",
+            "Exciting and dynamic",
+            "Learn financial markets"
+        ],
+        cons: [
+            "High risk of loss",
+            "Requires significant learning",
+            "Emotional stress",
+            "Needs capital to start"
+        ],
+        categories: ["Fast money"]
+    },
+    {
+        id: 5,
+        title: "Dropshipping",
+        description: "Sell products online without holding inventory. When someone buys, the supplier ships directly to them.",
+        difficulty: "medium",
+        timeRequired: "1-2 months",
+        moneySpeed: "medium",
+        riskLevel: "medium",
+        worthIt: "7/10",
+        firstEarnings: "1-2 months",
+        pros: [
+            "Low startup costs",
+            "No inventory management",
+            "Location independent",
+            "Scalable business model"
+        ],
+        cons: [
+            "Low profit margins",
+            "High competition",
+            "Supplier dependency",
+            "Customer service challenges"
+        ],
+        categories: ["Online only"]
+    },
+    {
+        id: 6,
+        title: "Print on Demand",
+        description: "Design custom products (t-shirts, mugs, etc.) and sell them online. Items are printed only when ordered.",
+        difficulty: "easy",
+        timeRequired: "2-4 weeks",
+        moneySpeed: "medium",
+        riskLevel: "low",
+        worthIt: "8/10",
+        firstEarnings: "2-4 weeks",
+        pros: [
+            "No upfront inventory costs",
+            "Creative outlet",
+            "Passive income potential",
+            "Easy to start"
+        ],
+        cons: [
+            "Saturated market",
+            "Lower profit per item",
+            "Requires design skills or outsourcing",
+            "Platform fees"
+        ],
+        categories: ["No money needed", "Online only", "Beginner friendly"]
+    },
+    {
+        id: 7,
+        title: "Affiliate Marketing",
+        description: "Promote other people's products and earn a commission on each sale through your unique referral link.",
+        difficulty: "medium",
+        timeRequired: "2-6 months",
+        moneySpeed: "slow",
+        riskLevel: "low",
+        worthIt: "8/10",
+        firstEarnings: "2-6 months",
+        pros: [
+            "No product creation needed",
+            "Passive income potential",
+            "Low startup costs",
+            "Work from anywhere"
+        ],
+        cons: [
+            "Takes time to build audience",
+            "Dependent on merchant's product quality",
+            "Income can fluctuate",
+            "Need traffic to succeed"
+        ],
+        categories: ["No money needed", "Online only"]
+    },
+    {
+        id: 8,
+        title: "Social Media Management",
+        description: "Manage social media accounts for businesses, creating content and engaging with their audience.",
+        difficulty: "easy",
+        timeRequired: "2-3 weeks",
+        moneySpeed: "medium",
+        riskLevel: "low",
+        worthIt: "8/10",
+        firstEarnings: "2-3 weeks",
+        pros: [
+            "High demand",
+            "Flexible hours",
+            "Learn valuable skills",
+            "Recurring income"
+        ],
+        cons: [
+            "Clients can be demanding",
+            "Stay updated on trends",
+            "Results-driven pressure",
+            "Can be time-consuming"
+        ],
+        categories: ["Online only", "Beginner friendly"]
+    },
+    {
+        id: 9,
+        title: "App/Website Development",
+        description: "Build websites or mobile apps for clients or create your own digital products to sell.",
+        difficulty: "hard",
+        timeRequired: "3-6 months",
+        moneySpeed: "medium",
+        riskLevel: "low",
+        worthIt: "9/10",
+        firstEarnings: "1-3 months",
+        pros: [
+            "High earning potential",
+            "Always in demand",
+            "Remote work",
+            "Build valuable portfolio"
+        ],
+        cons: [
+            "Steep learning curve",
+            "Requires technical skills",
+            "Time-intensive projects",
+            "Constant learning needed"
+        ],
+        categories: ["Online only"]
+    },
+    {
+        id: 10,
+        title: "Digital Product Selling",
+        description: "Create and sell digital products like ebooks, courses, templates, or software online.",
+        difficulty: "medium",
+        timeRequired: "1-3 months",
+        moneySpeed: "medium",
+        riskLevel: "low",
+        worthIt: "9/10",
+        firstEarnings: "1-3 months",
+        pros: [
+            "No inventory or shipping",
+            "High profit margins",
+            "Scalable income",
+            "Create once, sell many times"
+        ],
+        cons: [
+            "Upfront time investment",
+            "Marketing required",
+            "Competition in popular niches",
+            "Need expertise in topic"
+        ],
+        categories: ["No money needed", "Online only"]
+    }
+];
+
+const categories = [
+    {
+        name: "No money needed",
+        icon: "💰",
+        description: "Start with zero investment"
+    },
+    {
+        name: "Online only",
+        icon: "💻",
+        description: "Work from anywhere"
+    },
+    {
+        name: "Fast money",
+        icon: "⚡",
+        description: "Quick returns possible"
+    },
+    {
+        name: "Beginner friendly",
+        icon: "🎯",
+        description: "Easy to get started"
+    }
+];
+
+const businessGuides = {
+    freelancing: {
+        title: "Freelancing Guide",
+        steps: [
+            {
+                title: "Choose Your Service",
+                content: "Pick a skill you already have or can learn quickly: writing, graphic design, social media management, virtual assistance, or basic coding. Focus on ONE service to start."
+            },
+            {
+                title: "Create Profiles",
+                content: "Sign up on Fiverr, Upwork, or Freelancer. Create a professional profile with a clear photo, compelling bio, and showcase any past work (even personal projects count)."
+            },
+            {
+                title: "Set Competitive Prices",
+                content: "Start low to get your first reviews. Offer a basic service for €10-20. Once you have 5-10 reviews, gradually increase prices."
+            },
+            {
+                title: "Apply to Jobs Daily",
+                content: "Send 10-15 personalized proposals every day. Customize each one. Show you understand the client's needs. Be specific about how you'll help them."
+            },
+            {
+                title: "Deliver Excellent Work",
+                content: "Over-deliver on your first few projects. Ask for reviews. Respond quickly to messages. Build a reputation for reliability and quality."
+            },
+            {
+                title: "Scale Up",
+                content: "After earning your first €50-100, raise your rates. Focus on repeat clients. Ask for referrals. Consider specializing further in a profitable niche."
+            }
+        ]
+    },
+    reselling: {
+        title: "Reselling Guide",
+        steps: [
+            {
+                title: "Research Your Market",
+                content: "Browse eBay, Vinted, Depop, or Facebook Marketplace. Look for what's selling well. Check completed listings to see actual selling prices. Find a niche (sneakers, vintage clothing, tech, etc.)."
+            },
+            {
+                title: "Source Your First Items",
+                content: "Start with things you already own. Check thrift stores, garage sales, clearance sections. Look for brand-name items at low prices. Use €20-50 for your first purchases."
+            },
+            {
+                title: "List Professionally",
+                content: "Take clear, well-lit photos from multiple angles. Write detailed, honest descriptions. Research pricing by checking similar sold items. Price competitively to move inventory quickly at first."
+            },
+            {
+                title: "Make Your First Sales",
+                content: "Respond to buyers quickly. Ship items promptly with tracking. Package items securely. Ask for reviews and feedback."
+            },
+            {
+                title: "Reinvest Profits",
+                content: "Use money from first sales to buy more inventory. Keep track of expenses and profits. Learn which items sell fastest and have best margins."
+            },
+            {
+                title: "Scale Your Operation",
+                content: "Build relationships with suppliers. Consider bulk buying. Automate listings with templates. Focus on high-margin items. Aim for €50-100 profit in first month."
+            }
+        ]
+    },
+    contentcreation: {
+        title: "Content Creation Guide",
+        steps: [
+            {
+                title: "Pick Your Platform & Niche",
+                content: "Choose ONE platform: YouTube, TikTok, Instagram, or a blog. Pick a specific niche you're passionate about: finance tips, gaming, cooking, fitness, tech reviews, etc."
+            },
+            {
+                title: "Study Successful Creators",
+                content: "Find 5-10 successful creators in your niche. Analyze their content: what topics perform well, how they structure videos, their thumbnail/title strategies. Don't copy—learn and adapt."
+            },
+            {
+                title: "Create Your First 10 Pieces",
+                content: "Don't wait for perfection. Use your phone to start. Focus on providing value: solve a problem, entertain, or educate. Post consistently (3-7 times per week initially)."
+            },
+            {
+                title: "Engage with Your Audience",
+                content: "Respond to every comment. Ask for feedback and content ideas. Join communities in your niche. Collaborate with similar-sized creators."
+            },
+            {
+                title: "Analyze & Improve",
+                content: "Check analytics weekly. See what content performs best. Double down on successful topics and formats. Improve quality gradually—better audio, lighting, editing."
+            },
+            {
+                title: "Monetize",
+                content: "Once you have 1,000+ engaged followers: join platform partner programs, reach out to brands for sponsorships, offer paid digital products or services, use affiliate links. First €50-100 typically comes in months 3-6."
+            }
+        ]
+    },
+    dropshipping: {
+        title: "Dropshipping Guide",
+        steps: [
+            {
+                title: "Find a Winning Product",
+                content: "Research trending products on AliExpress, Facebook ads library, and TikTok. Look for items with high perceived value, light weight (cheap shipping), and 3x markup potential. Validate demand using Google Trends."
+            },
+            {
+                title: "Set Up Your Store",
+                content: "Create a Shopify store (14-day free trial, then $29/month). Choose a clean, professional theme. Add 10-20 products initially. Write compelling product descriptions. Set competitive prices with good margins."
+            },
+            {
+                title: "Connect to Suppliers",
+                content: "Use apps like Oberlo, Spocket, or AliExpress Dropshipping. Import products to your store. Order samples to check quality. Set automated order fulfillment."
+            },
+            {
+                title: "Market Your Store",
+                content: "Start with organic social media (TikTok, Instagram). Create engaging product videos. Use relevant hashtags. Once profitable, consider paid ads (€5-10/day to start). Focus on one marketing channel first."
+            },
+            {
+                title: "Handle Your First Orders",
+                content: "Provide excellent customer service. Send tracking numbers promptly. Be honest about shipping times. Handle refunds professionally. Ask for reviews."
+            },
+            {
+                title: "Scale What Works",
+                content: "Test 3-5 products. Double down on winners. Increase ad spend on profitable campaigns. Improve product pages based on data. Aim for first €50-100 in 4-8 weeks."
+            }
+        ]
+    },
+    printondemand: {
+        title: "Print on Demand Guide",
+        steps: [
+            {
+                title: "Choose Your Platform",
+                content: "Sign up for Printful, Printify, or Redbubble. These platforms handle printing and shipping. Start with t-shirts and simple products. No upfront costs required."
+            },
+            {
+                title: "Create or Source Designs",
+                content: "Use free tools like Canva or GIMP to create simple designs. Focus on trending topics, funny quotes, niche interests, or inspirational messages. Alternatively, hire designers on Fiverr for €5-20 per design."
+            },
+            {
+                title: "Set Up Product Listings",
+                content: "Upload designs to your chosen platform. Create mockups showing products in use. Write catchy titles and descriptions with keywords. Research pricing by checking competitors."
+            },
+            {
+                title: "Launch Your Shop",
+                content: "Start with 20-30 designs across different niches to test what sells. Use Etsy (easy to start, built-in traffic) or create your own Shopify store. Optimize for search with good keywords."
+            },
+            {
+                title: "Promote Your Products",
+                content: "Share on social media (Pinterest, Instagram, TikTok). Join niche communities related to your designs. Consider Pinterest ads (low-cost starting at €5/day). Leverage SEO on Etsy."
+            },
+            {
+                title: "Scale Successful Designs",
+                content: "Track which designs sell. Create variations of winners. Expand to new products (mugs, hoodies, stickers). Aim for first €50 in 3-6 weeks with consistent effort."
+            }
+        ]
+    },
+    affiliatemarketing: {
+        title: "Affiliate Marketing Guide",
+        steps: [
+            {
+                title: "Choose Your Niche",
+                content: "Pick a specific area you're interested in: tech gadgets, fitness, finance, gaming, beauty. Choose something with proven buyer demand and products you can genuinely recommend."
+            },
+            {
+                title: "Join Affiliate Programs",
+                content: "Sign up for Amazon Associates (easy to start), ShareASale, CJ Affiliate, or ClickBank. Look for programs in your niche offering 5-30% commissions. Read terms carefully."
+            },
+            {
+                title: "Build Your Platform",
+                content: "Start a YouTube channel, blog, TikTok account, or Instagram page focused on your niche. You need somewhere to share your affiliate links. Choose ONE platform initially."
+            },
+            {
+                title: "Create Valuable Content",
+                content: "Make product reviews, comparisons, tutorials, or 'best of' lists. Focus on helping people make buying decisions. Be honest—trust is crucial. Include affiliate links in descriptions."
+            },
+            {
+                title: "Drive Traffic",
+                content: "Use SEO for blogs (target long-tail keywords). Post consistently on social media. Engage in communities. Create shareable, valuable content. Comment on related content."
+            },
+            {
+                title: "Optimize & Scale",
+                content: "Track which content drives sales. Create more of what works. Test different products and offers. Build an email list for repeat promotions. First €50-100 typically takes 2-6 months."
+            }
+        ]
+    },
+    socialmediamanagement: {
+        title: "Social Media Management Guide",
+        steps: [
+            {
+                title: "Learn the Basics",
+                content: "Understand major platforms: Instagram, Facebook, TikTok, LinkedIn. Learn about content calendars, engagement strategies, and basic analytics. Take free courses on YouTube or HubSpot Academy."
+            },
+            {
+                title: "Build Your Own Presence",
+                content: "Grow your own social media as proof of your skills. Even 500-1,000 engaged followers shows you understand the platforms. Document your strategies and results."
+            },
+            {
+                title: "Create Service Packages",
+                content: "Offer clear packages: Basic (€150/month): 3 posts/week, engagement. Standard (€300/month): 5 posts/week, stories, engagement. Premium (€500/month): Daily posts, stories, reels, strategy, analytics."
+            },
+            {
+                title: "Find Your First Client",
+                content: "Reach out to local small businesses (coffee shops, gyms, salons) with weak social media. Offer a free audit or one month at 50% off. Use cold email or direct Instagram messages."
+            },
+            {
+                title: "Deliver Results",
+                content: "Create a content calendar. Use scheduling tools like Buffer or Later. Post consistently. Track growth and engagement. Provide monthly reports. Communicate regularly with clients."
+            },
+            {
+                title: "Scale Your Business",
+                content: "After 2-3 clients, raise prices. Ask for referrals and testimonials. Use templates to save time. Consider niching down (e.g., only fitness businesses). Aim for €300-500 in month 2-3."
+            }
+        ]
+    },
+    development: {
+        title: "App/Website Development Guide",
+        steps: [
+            {
+                title: "Learn Essential Skills",
+                content: "For websites: HTML, CSS, JavaScript basics. Use freeCodeCamp, The Odin Project, or YouTube. For apps: consider no-code tools like Bubble or FlutterFlow initially, or learn React Native. Focus on ONE path."
+            },
+            {
+                title: "Build Practice Projects",
+                content: "Create 3-5 portfolio projects: a business website, a landing page, a simple app. Make them look professional. Host them online (GitHub Pages, Vercel, Netlify are free). These are your proof of skill."
+            },
+            {
+                title: "Define Your Services",
+                content: "Start simple: landing pages (€100-300), small business websites (€300-800), basic web apps (€500-1,500). Be specific about what's included and delivery time."
+            },
+            {
+                title: "Find Your First Clients",
+                content: "Post on Fiverr and Upwork with competitive pricing. Reach out to local businesses needing websites. Join developer communities and freelance job boards. Offer one discounted project for a testimonial."
+            },
+            {
+                title: "Deliver Quality Work",
+                content: "Communicate clearly about requirements. Send progress updates. Test everything thoroughly. Provide basic documentation. Offer minor revisions. Ask for review and referral."
+            },
+            {
+                title: "Grow Your Business",
+                content: "Raise prices after 5 projects. Specialize in a niche or platform. Build long-term client relationships. Consider retainer agreements. First €100-300 typically in month 2-4."
+            }
+        ]
+    },
+    digitalproducts: {
+        title: "Digital Product Selling Guide",
+        steps: [
+            {
+                title: "Identify Your Product Idea",
+                content: "Choose based on your expertise: ebook on a topic you know well, course teaching a skill, Notion templates, design templates, spreadsheet tools, presets/filters. Validate demand by checking existing marketplaces."
+            },
+            {
+                title: "Create Your Product",
+                content: "Keep first version simple and focused. Solve ONE specific problem well. Use free tools: Canva for design, Google Docs for writing, Loom for courses. Aim to create in 1-2 weeks max."
+            },
+            {
+                title: "Set Up Sales Platform",
+                content: "Use Gumroad (easiest, low fees), Etsy (built-in traffic), or Sellfy. Create compelling product page: clear title, problem it solves, preview/samples, attractive mockups, benefits list. Price strategically (€7-27 for first product)."
+            },
+            {
+                title: "Build an Audience",
+                content: "Share valuable free content related to your product on Twitter, Instagram, TikTok, or LinkedIn. Build trust first. Give away 80% of your knowledge free, charge for the organized, actionable 20%."
+            },
+            {
+                title: "Launch and Promote",
+                content: "Announce to your audience. Offer launch discount (20-30% off). Share behind-the-scenes. Post in relevant communities (with permission). Ask early buyers for testimonials."
+            },
+            {
+                title: "Iterate and Expand",
+                content: "Gather feedback. Improve product based on reviews. Create complementary products. Build email list for future launches. First €50-100 typically in 4-8 weeks with consistent promotion."
+            }
+        ]
+    },
+    trading: {
+        title: "Trading Guide (Caution: High Risk)",
+        steps: [
+            {
+                title: "Learn the Fundamentals",
+                content: "Spend 2-3 months learning before risking real money. Study: market basics, technical analysis, risk management, trading psychology. Use free resources: Investopedia, YouTube channels like Rayner Teo. Understand you can lose money."
+            },
+            {
+                title: "Choose Your Market",
+                content: "Start with ONE: stocks (lower risk, good for beginners), crypto (high volatility, 24/7), or forex (requires more capital). Don't spread too thin. Each market has different dynamics."
+            },
+            {
+                title: "Practice with Paper Trading",
+                content: "Use demo accounts (TradingView, TD Ameritrade's thinkorswim, or broker demos). Trade for 2-3 months with fake money. Test strategies. Track results. Don't skip this—most beginners who do lose money."
+            },
+            {
+                title: "Start Small with Real Money",
+                content: "Begin with only €100-200 you can afford to lose completely. Use regulated platforms: eToro, Interactive Brokers, or Coinbase. Never use leverage as a beginner. Risk only 1-2% per trade."
+            },
+            {
+                title: "Follow Strict Risk Management",
+                content: "Set stop-losses on every trade. Never risk more than you can lose. Don't chase losses. Keep emotions in check. Journal every trade to learn from mistakes. Most traders lose money—be the exception."
+            },
+            {
+                title: "Continuous Learning",
+                content: "Markets change constantly. Keep learning. Review trades weekly. Adjust strategies based on data, not emotions. Consider this a long-term skill, not a get-rich-quick scheme. First €50 profit may take 6+ months (or never come—be realistic)."
+            }
+        ]
+    }
+};
+
+function App() {
+    const [theme, setTheme] = useState('light');
+    const [currentPage, setCurrentPage] = useState('home');
+    const [selectedOpportunity, setSelectedOpportunity] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [isPro, setIsPro] = useState(false);
+    const [showProModal, setShowProModal] = useState(false);
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showGuideSelector, setShowGuideSelector] = useState(false);
+    const [selectedGuide, setSelectedGuide] = useState(null);
+    const [compareItems, setCompareItems] = useState([null, null]);
+    const [comments, setComments] = useState({});
+    const [newComment, setNewComment] = useState('');
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(theme === 'light' ? 'dark' : 'light');
+    };
+
+    const handleProUpgrade = () => {
+        setShowProModal(true);
+    };
+
+    const confirmProUpgrade = () => {
+        setShowProModal(false);
+        setShowPaymentModal(true);
+    };
+
+    const handlePayment = () => {
+        setShowPaymentModal(false);
+        setShowGuideSelector(true);
+    };
+
+    const selectGuide = (guideKey) => {
+        setSelectedGuide(guideKey);
+        setShowGuideSelector(false);
+        setIsPro(true);
+        setCurrentPage('pro-guide');
+    };
+
+    const filteredOpportunities = opportunities.filter(opp => {
+        const matchesSearch = opp.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                            opp.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesCategory = activeCategory === 'all' || opp.categories.includes(activeCategory);
+        return matchesSearch && matchesCategory;
+    });
+
+    const addComment = (oppId) => {
+        if (newComment.trim()) {
+            const comment = {
+                id: Date.now(),
+                author: 'User' + Math.floor(Math.random() * 1000),
+                text: newComment,
+                votes: 0,
+                userVote: 0
+            };
+            setComments({
+                ...comments,
+                [oppId]: [...(comments[oppId] || []), comment]
+            });
+            setNewComment('');
+        }
+    };
+
+    const voteComment = (oppId, commentId, vote) => {
+        setComments({
+            ...comments,
+            [oppId]: comments[oppId].map(c =>
+                c.id === commentId
+                    ? {
+                        ...c,
+                        votes: c.votes - c.userVote + vote,
+                        userVote: vote
+                      }
+                    : c
+            )
+        });
+    };
+
+    return (
+        <div className="app-container">
+            <header className="header">
+                <div className="header-content">
+                    <div className="logo-container" onClick={() => setCurrentPage('home')}>
+                        <Logo />
+                        <span className="logo-text">MoneyMap</span>
+                    </div>
+                    <div className="header-actions">
+                        <button className="theme-toggle" onClick={toggleTheme}>
+                            {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
+                        </button>
+                        {!isPro && (
+                            <button className="pro-badge" onClick={handleProUpgrade}>
+                                ✨ Upgrade to Pro
+                            </button>
+                        )}
+                        {isPro && (
+                            <span className="pro-badge" style={{ cursor: 'default' }}>
+                                ⭐ Pro Member
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </header>
+
+            <main className="main-content">
+                {currentPage === 'home' && (
+                    <HomePage
+                        searchQuery={searchQuery}
+                        setSearchQuery={setSearchQuery}
+                        setCurrentPage={setCurrentPage}
+                        setActiveCategory={setActiveCategory}
+                    />
+                )}
+
+                {currentPage === 'opportunities' && (
+                    <OpportunitiesPage
+                        opportunities={filteredOpportunities}
+                        activeCategory={activeCategory}
+                        setActiveCategory={setActiveCategory}
+                        setSelectedOpportunity={setSelectedOpportunity}
+                        setCurrentPage={setCurrentPage}
+                        isPro={isPro}
+                    />
+                )}
+
+                {currentPage === 'detail' && selectedOpportunity && (
+                    <DetailPage
+                        opportunity={selectedOpportunity}
+                        setCurrentPage={setCurrentPage}
+                        comments={comments[selectedOpportunity.id] || []}
+                        newComment={newComment}
+                        setNewComment={setNewComment}
+                        addComment={() => addComment(selectedOpportunity.id)}
+                        voteComment={(commentId, vote) => voteComment(selectedOpportunity.id, commentId, vote)}
+                    />
+                )}
+
+                {currentPage === 'compare' && (
+                    <ComparePage
+                        opportunities={opportunities}
+                        compareItems={compareItems}
+                        setCompareItems={setCompareItems}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
+
+                {currentPage === 'pro-guide' && selectedGuide && (
+                    <ProGuidePage
+                        guide={businessGuides[selectedGuide]}
+                        setCurrentPage={setCurrentPage}
+                    />
+                )}
+            </main>
+
+            {showProModal && (
+                <ProModal
+                    onConfirm={confirmProUpgrade}
+                    onCancel={() => setShowProModal(false)}
+                />
+            )}
+
+            {showPaymentModal && (
+                <PaymentModal
+                    onConfirm={handlePayment}
+                    onCancel={() => setShowPaymentModal(false)}
+                />
+            )}
+
+            {showGuideSelector && (
+                <GuideSelectorModal
+                    onSelect={selectGuide}
+                    onCancel={() => setShowGuideSelector(false)}
+                />
+            )}
+        </div>
+    );
+}
+
+function HomePage({ searchQuery, setSearchQuery, setCurrentPage, setActiveCategory }) {
+    return (
+        <div>
+            <div className="hero">
+                <h1>Discover Your Path to Earning</h1>
+                <p>Clear, realistic ways to make money online or offline. No scams. No BS.</p>
+
+                <div className="search-container">
+                    <input
+                        type="text"
+                        className="search-input"
+                        placeholder="Search ways to make money..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                                setCurrentPage('opportunities');
+                            }
+                        }}
+                    />
+                </div>
+            </div>
+
+            <div className="categories">
+                {categories.map((cat, idx) => (
+                    <div
+                        key={idx}
+                        className="category-card"
+                        onClick={() => {
+                            setActiveCategory(cat.name);
+                            setCurrentPage('opportunities');
+                        }}
+                    >
+                        <div className="category-icon">{cat.icon}</div>
+                        <h3>{cat.name}</h3>
+                        <p>{cat.description}</p>
+                    </div>
+                ))}
+            </div>
+
+            <div style={{ marginTop: '3rem', textAlign: 'center' }}>
+                <button
+                    className="nav-btn"
+                    onClick={() => {
+                        setActiveCategory('all');
+                        setCurrentPage('opportunities');
+                    }}
+                >
+                    View All Opportunities →
+                </button>
+                <button
+                    className="nav-btn"
+                    onClick={() => setCurrentPage('compare')}
+                >
+                    Compare Methods
+                </button>
+            </div>
+        </div>
+    );
+}
+
+function OpportunitiesPage({ opportunities, activeCategory, setActiveCategory, setSelectedOpportunity, setCurrentPage, isPro }) {
+    const [difficultyFilter, setDifficultyFilter] = useState('all');
+    const [speedFilter, setSpeedFilter] = useState('all');
+
+    const filteredOpps = opportunities.filter(opp => {
+        const matchesDifficulty = difficultyFilter === 'all' || opp.difficulty === difficultyFilter;
+        const matchesSpeed = speedFilter === 'all' || opp.moneySpeed === speedFilter;
+        return matchesDifficulty && matchesSpeed;
+    });
+
+    return (
+        <div>
+            <h1 className="page-title">Money-Making Opportunities</h1>
+
+            <div className="filters">
+                <button
+                    className={`filter-btn ${activeCategory === 'all' ? 'active' : ''}`}
+                    onClick={() => setActiveCategory('all')}
+                >
+                    All
+                </button>
+                {categories.map((cat, idx) => (
+                    <button
+                        key={idx}
+                        className={`filter-btn ${activeCategory === cat.name ? 'active' : ''}`}
+                        onClick={() => setActiveCategory(cat.name)}
+                    >
+                        {cat.icon} {cat.name}
+                    </button>
+                ))}
+            </div>
+
+            {isPro && (
+                <div className="filters" style={{ borderTop: '1px solid var(--border)', paddingTop: '1rem', marginTop: '1rem' }}>
+                    <strong style={{ marginRight: '1rem' }}>Pro Filters:</strong>
+                    <select
+                        className="filter-btn"
+                        value={difficultyFilter}
+                        onChange={(e) => setDifficultyFilter(e.target.value)}
+                    >
+                        <option value="all">All Difficulties</option>
+                        <option value="easy">Easy</option>
+                        <option value="medium">Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                    <select
+                        className="filter-btn"
+                        value={speedFilter}
+                        onChange={(e) => setSpeedFilter(e.target.value)}
+                    >
+                        <option value="all">All Speeds</option>
+                        <option value="slow">Slow</option>
+                        <option value="medium">Medium</option>
+                        <option value="fast">Fast</option>
+                    </select>
+                </div>
+            )}
+
+            <div className="opportunities-grid">
+                {filteredOpps.map((opp) => (
+                    <div
+                        key={opp.id}
+                        className="opportunity-card"
+                        onClick={() => {
+                            setSelectedOpportunity(opp);
+                            setCurrentPage('detail');
+                        }}
+                    >
+                        <div className="opportunity-header">
+                            <h3 className="opportunity-title">{opp.title}</h3>
+                            <p className="opportunity-description">{opp.description}</p>
+                        </div>
+                        <div className="opportunity-stats">
+                            <div className="stat-row">
+                                <span className="stat-label">Difficulty</span>
+                                <span className={`stat-value difficulty-${opp.difficulty}`}>
+                                    {opp.difficulty}
+                                </span>
+                            </div>
+                            <div className="stat-row">
+                                <span className="stat-label">Time</span>
+                                <span className="stat-value">{opp.timeRequired}</span>
+                            </div>
+                            <div className="stat-row">
+                                <span className="stat-label">Money Speed</span>
+                                <span className={`stat-value speed-${opp.moneySpeed}`}>
+                                    {opp.moneySpeed}
+                                </span>
+                            </div>
+                            <div className="stat-row">
+                                <span className="stat-label">Risk Level</span>
+                                <span className={`stat-value risk-${opp.riskLevel}`}>
+                                    {opp.riskLevel}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+}
+
+function DetailPage({ opportunity, setCurrentPage, comments, newComment, setNewComment, addComment, voteComment }) {
+    const chartRef = useRef(null);
+    const chartInstance = useRef(null);
+
+    useEffect(() => {
+        if (chartRef.current) {
+            const ctx = chartRef.current.getContext('2d');
+
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+
+            const difficultyScore = opportunity.difficulty === 'easy' ? 3 : opportunity.difficulty === 'medium' ? 6 : 9;
+            const speedScore = opportunity.moneySpeed === 'fast' ? 9 : opportunity.moneySpeed === 'medium' ? 6 : 3;
+            const riskScore = opportunity.riskLevel === 'low' ? 3 : opportunity.riskLevel === 'medium' ? 6 : 9;
+            const profitScore = parseInt(opportunity.worthIt.split('/')[0]);
+
+            chartInstance.current = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Difficulty', 'Speed', 'Risk', 'Worth It'],
+                    datasets: [{
+                        label: opportunity.title,
+                        data: [difficultyScore, speedScore, riskScore, profitScore],
+                        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                        borderColor: 'rgba(0, 0, 0, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 10,
+                            ticks: {
+                                stepSize: 2
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+
+        return () => {
+            if (chartInstance.current) {
+                chartInstance.current.destroy();
+            }
+        };
+    }, [opportunity]);
+
+    return (
+        <div className="detail-page">
+            <button className="back-button" onClick={() => setCurrentPage('opportunities')}>
+                ← Back to Opportunities
+            </button>
+
+            <div className="detail-header">
+                <h1 className="detail-title">{opportunity.title}</h1>
+                <div className="worth-it-rating">Worth It: {opportunity.worthIt}</div>
+            </div>
+
+            <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '2rem' }}>
+                {opportunity.description}
+            </p>
+
+            <div className="chart-container">
+                <h3>Performance Overview</h3>
+                <canvas ref={chartRef}></canvas>
+            </div>
+
+            <div className="detail-grid">
+                <div className="detail-section pros">
+                    <h3>✅ Pros</h3>
+                    <ul>
+                        {opportunity.pros.map((pro, idx) => (
+                            <li key={idx}>{pro}</li>
+                        ))}
+                    </ul>
+                </div>
+
+                <div className="detail-section cons">
+                    <h3>❌ Cons</h3>
+                    <ul>
+                        {opportunity.cons.map((con, idx) => (
+                            <li key={idx}>{con}</li>
+                        ))}
+                    </ul>
+                </div>
+            </div>
+
+            <div className="detail-section">
+                <h3>⏱️ Time to First Earnings</h3>
+                <p style={{ fontSize: '1.5rem', fontWeight: 'bold', marginTop: '1rem' }}>
+                    {opportunity.firstEarnings}
+                </p>
+            </div>
+
+            <div className="community-section">
+                <h2>💬 Community Experiences</h2>
+
+                <div className="comment-form">
+                    <textarea
+                        className="comment-input"
+                        placeholder="Share your experience or tips..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                    />
+                    <button className="submit-comment" onClick={addComment}>
+                        Post Comment
+                    </button>
+                </div>
+
+                <div className="comments-list">
+                    {comments.length === 0 && (
+                        <p style={{ color: 'var(--text-secondary)', textAlign: 'center', padding: '2rem' }}>
+                            No comments yet. Be the first to share your experience!
+                        </p>
+                    )}
+                    {comments.map((comment) => (
+                        <div key={comment.id} className="comment">
+                            <div className="comment-header">
+                                <span className="comment-author">{comment.author}</span>
+                                <div className="comment-votes">
+                                    <button
+                                        className={`vote-btn ${comment.userVote === 1 ? 'active' : ''}`}
+                                        onClick={() => voteComment(comment.id, comment.userVote === 1 ? 0 : 1)}
+                                    >
+                                        ↑
+                                    </button>
+                                    <span>{comment.votes}</span>
+                                    <button
+                                        className={`vote-btn ${comment.userVote === -1 ? 'active' : ''}`}
+                                        onClick={() => voteComment(comment.id, comment.userVote === -1 ? 0 : -1)}
+                                    >
+                                        ↓
+                                    </button>
+                                </div>
+                            </div>
+                            <p>{comment.text}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ComparePage({ opportunities, compareItems, setCompareItems, setCurrentPage }) {
+    const item1 = opportunities.find(o => o.id === compareItems[0]);
+    const item2 = opportunities.find(o => o.id === compareItems[1]);
+
+    return (
+        <div>
+            <button className="back-button" onClick={() => setCurrentPage('home')}>
+                ← Back to Home
+            </button>
+
+            <h1 className="page-title">Compare Money-Making Methods</h1>
+
+            <div className="comparison-controls">
+                <select
+                    className="comparison-select"
+                    value={compareItems[0] || ''}
+                    onChange={(e) => setCompareItems([parseInt(e.target.value) || null, compareItems[1]])}
+                >
+                    <option value="">Select first method...</option>
+                    {opportunities.map(opp => (
+                        <option key={opp.id} value={opp.id}>{opp.title}</option>
+                    ))}
+                </select>
+
+                <select
+                    className="comparison-select"
+                    value={compareItems[1] || ''}
+                    onChange={(e) => setCompareItems([compareItems[0], parseInt(e.target.value) || null])}
+                >
+                    <option value="">Select second method...</option>
+                    {opportunities.map(opp => (
+                        <option key={opp.id} value={opp.id}>{opp.title}</option>
+                    ))}
+                </select>
+            </div>
+
+            {item1 && item2 && (
+                <table className="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>{item1.title}</th>
+                            <th>{item2.title}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Description</strong></td>
+                            <td>{item1.description}</td>
+                            <td>{item2.description}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Difficulty</strong></td>
+                            <td>
+                                <span className={`stat-value difficulty-${item1.difficulty}`}>
+                                    {item1.difficulty}
+                                </span>
+                            </td>
+                            <td>
+                                <span className={`stat-value difficulty-${item2.difficulty}`}>
+                                    {item2.difficulty}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Time Required</strong></td>
+                            <td>{item1.timeRequired}</td>
+                            <td>{item2.timeRequired}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Money Speed</strong></td>
+                            <td>
+                                <span className={`stat-value speed-${item1.moneySpeed}`}>
+                                    {item1.moneySpeed}
+                                </span>
+                            </td>
+                            <td>
+                                <span className={`stat-value speed-${item2.moneySpeed}`}>
+                                    {item2.moneySpeed}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Risk Level</strong></td>
+                            <td>
+                                <span className={`stat-value risk-${item1.riskLevel}`}>
+                                    {item1.riskLevel}
+                                </span>
+                            </td>
+                            <td>
+                                <span className={`stat-value risk-${item2.riskLevel}`}>
+                                    {item2.riskLevel}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Worth It Rating</strong></td>
+                            <td>{item1.worthIt}</td>
+                            <td>{item2.worthIt}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>First Earnings</strong></td>
+                            <td>{item1.firstEarnings}</td>
+                            <td>{item2.firstEarnings}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            )}
+
+            {(!item1 || !item2) && (
+                <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '3rem' }}>
+                    Select two methods above to compare them side-by-side
+                </p>
+            )}
+        </div>
+    );
+}
+
+function ProGuidePage({ guide, setCurrentPage }) {
+    return (
+        <div className="detail-page">
+            <button className="back-button" onClick={() => setCurrentPage('home')}>
+                ← Back to Home
+            </button>
+
+            <h1 className="page-title">⭐ {guide.title}</h1>
+            <p style={{ fontSize: '1.2rem', color: 'var(--text-secondary)', marginBottom: '3rem' }}>
+                Follow this step-by-step guide to start your journey from zero to your first €50-100
+            </p>
+
+            <div className="guide-steps">
+                {guide.steps.map((step, idx) => (
+                    <div key={idx} className="guide-step">
+                        <h3 className="step-title">
+                            <span className="step-number">{idx + 1}</span>
+                            {step.title}
+                        </h3>
+                        <div className="step-content">{step.content}</div>
+                    </div>
+                ))}
+            </div>
+
+            <div style={{ marginTop: '3rem', padding: '2rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '12px', textAlign: 'center' }}>
+                <h3>🎯 Your Goal</h3>
+                <p style={{ fontSize: '1.1rem', marginTop: '1rem' }}>
+                    Follow these steps consistently, and you should see your first €50-100 within the estimated timeframe.
+                    Remember: success requires action, persistence, and learning from mistakes. Stay realistic and patient!
+                </p>
+            </div>
+        </div>
+    );
+}
+
+function ProModal({ onConfirm, onCancel }) {
+    return (
+        <div className="modal-overlay">
+            <div className="modal">
+                <h2>✨ Upgrade to MoneyMap Pro</h2>
+                <p>Unlock premium features to supercharge your money-making journey:</p>
+                <ul style={{ marginLeft: '1.5rem', marginBottom: '1rem', lineHeight: '2' }}>
+                    <li><strong>Advanced Filters</strong> - Find opportunities that match your exact criteria</li>
+                    <li><strong>Personalized Recommendations</strong> - Get AI-powered suggestions based on your profile</li>
+                    <li><strong>Detailed Breakdowns</strong> - Access in-depth analysis and success strategies</li>
+                    <li><strong>Step-by-Step Business Guides</strong> - Follow proven paths to your first earnings</li>
+                </ul>
+                <div className="price">€7.99/month</div>
+                <p style={{ fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
+                    Cancel anytime. No hidden fees. Start building your income today!
+                </p>
+                <div className="modal-buttons">
+                    <button className="modal-btn modal-btn-secondary" onClick={onCancel}>
+                        Maybe Later
+                    </button>
+                    <button className="modal-btn modal-btn-primary" onClick={onConfirm}>
+                        Yes, Upgrade Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function PaymentModal({ onConfirm, onCancel }) {
+    return (
+        <div className="modal-overlay">
+            <div className="modal">
+                <h2>💳 Complete Your Payment</h2>
+                <div className="price">€7.99/month</div>
+                <p style={{ marginBottom: '2rem' }}>
+                    In a real application, this would connect to a payment processor like Stripe or PayPal.
+                    For this demo, click "Complete Payment" to continue.
+                </p>
+                <div style={{ padding: '1.5rem', backgroundColor: 'var(--bg-secondary)', borderRadius: '8px', marginBottom: '2rem' }}>
+                    <p style={{ fontSize: '0.9rem', marginBottom: '0.5rem' }}><strong>Demo Payment Details:</strong></p>
+                    <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                        Card: •••• •••• •••• 4242<br/>
+                        Expires: 12/26<br/>
+                        Security: Always encrypted
+                    </p>
+                </div>
+                <div className="modal-buttons">
+                    <button className="modal-btn modal-btn-secondary" onClick={onCancel}>
+                        Cancel
+                    </button>
+                    <button className="modal-btn modal-btn-primary" onClick={onConfirm}>
+                        Complete Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function GuideSelectorModal({ onSelect, onCancel }) {
+    const [selectedBusiness, setSelectedBusiness] = useState(null);
+
+    const businessOptions = [
+        { key: 'freelancing', name: 'Freelancing', icon: '💼' },
+        { key: 'reselling', name: 'Reselling', icon: '🏷️' },
+        { key: 'contentcreation', name: 'Content Creation', icon: '🎥' },
+        { key: 'dropshipping', name: 'Dropshipping', icon: '📦' },
+        { key: 'printondemand', name: 'Print on Demand', icon: '👕' },
+        { key: 'affiliatemarketing', name: 'Affiliate Marketing', icon: '🔗' },
+        { key: 'socialmediamanagement', name: 'Social Media Management', icon: '📱' },
+        { key: 'development', name: 'Development', icon: '💻' },
+        { key: 'digitalproducts', name: 'Digital Products', icon: '📚' },
+        { key: 'trading', name: 'Trading', icon: '📈' }
+    ];
+
+    return (
+        <div className="modal-overlay">
+            <div className="modal" style={{ maxWidth: '700px' }}>
+                <h2>🎯 Choose Your Business Path</h2>
+                <p style={{ marginBottom: '2rem' }}>
+                    Select the business type you want to start, and we'll give you a complete step-by-step guide!
+                </p>
+
+                <div className="business-selector">
+                    {businessOptions.map((business) => (
+                        <div
+                            key={business.key}
+                            className={`business-option ${selectedBusiness === business.key ? 'selected' : ''}`}
+                            onClick={() => setSelectedBusiness(business.key)}
+                        >
+                            <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>{business.icon}</div>
+                            <div style={{ fontWeight: '600' }}>{business.name}</div>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="modal-buttons" style={{ marginTop: '2rem' }}>
+                    <button className="modal-btn modal-btn-secondary" onClick={onCancel}>
+                        Cancel
+                    </button>
+                    <button
+                        className="modal-btn modal-btn-primary"
+                        onClick={() => selectedBusiness && onSelect(selectedBusiness)}
+                        disabled={!selectedBusiness}
+                        style={{ opacity: selectedBusiness ? 1 : 0.5 }}
+                    >
+                        Get My Guide
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+ReactDOM.render(<App />, document.getElementById('root'));
